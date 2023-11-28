@@ -12,7 +12,7 @@ class ZTMParser:
             self.content = file.read()
             self.station_groups = self.extract_station_groups()
             self.stations = self.extract_stations()
-            self.bus_lines = self.extract_bus_lines()
+            self.transport_lines = self.extract_transport_lines()
             self.transport_lines_variants = self.extract_transport_line_numbers_and_types()
 
     def extract_station_groups(self):
@@ -73,7 +73,7 @@ class ZTMParser:
         df = pd.DataFrame(data)
         return df
     
-    def extract_bus_lines(self):
+    def extract_transport_lines(self):
         '''
         Extracts bus lines from the file and returns a dictionary of pandas dataframes.
         Each dataframe represents a single bus line and is indexed by station number in correct order.
@@ -133,14 +133,16 @@ class ZTMParser:
 
         return df
 
-    def get_edges(self):
+    def get_edges(self, layer=None):
         '''
         Returns a list of tuples representing edges of the graph.
-        Each tuple contains two station IDs.
+        Each tuple contains two station IDs. If layer is specified, only edges of that layer are returned. Accepted layer values: BUS, TRAM, TRAIN.
         '''
-
-        edges = []
-        for line in self.bus_lines.values():
+        layer_lines = self.transport_lines_variants[self.transport_lines_variants['Line Type'] == layer].index
+        edges  = []
+        iterator = layer_lines if layer else self.transport_lines.keys()
+        for line in iterator:
+            line = self.transport_lines[line]
             for i in range(len(line)-1):
                 edges.append((line.iloc[i]['ID'], line.iloc[i+1]['ID']))
         return edges
