@@ -20,3 +20,5 @@ G.add_edges_from(edges)
 pos = ztm.get_coordinates()
 nx.draw(G, pos, node_size=5, node_color='red')
 plt.show()
+```
+![Example Image](ztm_network.png)
